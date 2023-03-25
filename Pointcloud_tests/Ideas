@@ -1,0 +1,2 @@
+Viewshed calculationa nd base station locations
+    Holes in the convex hull: Calculate viewshed from the areas that are not covered and place new stations to the areas that visibility from highest number of uncovered areas
