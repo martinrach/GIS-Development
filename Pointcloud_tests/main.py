@@ -59,7 +59,7 @@ buildings.points = buildings.points[buildings.classification == 5]
 
 
 buildings_data = np.stack([buildings.X, buildings.Y, buildings.Z], axis=0).transpose((1, 0))
-classified_buildings = Classify_buildings.classify_buildings(buildings_data)
+classified_buildings = Classify_buildings.Classify(buildings_data, 10)
 
 #Visualize_data.visualize_data(data)
 #buildings = Classify_buildings.classify_buildings(data, not_ground)

@@ -3,11 +3,30 @@ from math import sqrt
 import open3d as o3d
 import Visualize_data
 
+
+# Dividing data to smaller sets to make calculatios faster
+
+def Classify(data, n):
+    if len(data) < 800:
+        geom = o3d.geometry.PointCloud()
+        geom.points = o3d.utility.Vector3dVector(data)
+        list_of_points = select_building_points(geom, n)
+        return list_of_points
+
+    else:
+        # print(data[199])
+        c = int(len(data) / 2)
+        # print(c)
+        data1 = data[:c]
+        data2 = data[c:]
+        d1 = Classify(data1, n)
+        d2 = Classify(data2, n)
+        return d1 + d2
+
+# Calculates n closest points of the seed point form the data
+
 def closest_n_points(seed, data, n):
     closest_points = []
-    #print(seed[0])
-    #print(seed[1])
-    #print(seed[2])
     X_0 = int(seed[0])
     Y_0 = int(seed[1])
     Z_0 = int(seed[2])
@@ -15,19 +34,13 @@ def closest_n_points(seed, data, n):
 
     #Going through all points and finding points that are closer than 4 meters from the point
     while i < len(data.points):
-        #print(data.points[i])
         point = data.points[i]
         X = int(point[0])
         Y = int(point[1])
         Z = int(point[2])
 
-        #print(X, Y, Z)
-        #print(X_0, Y_0, Z_0)
-        #print(abs(X - X_0))
-        #print(abs(Y - Y_0))
-        #print(abs(Z - Z_0))
+        #Euclidean distance between two points in cm
         eucl_dist = sqrt((abs(X - X_0))**2 + (abs(Y - Y_0))**2 + (abs(Z - Z_0))**2)
-        #print(eucl_dist, "eucl distance")
         point_to_add = (data.points[i], eucl_dist)
         if 5 < eucl_dist < 400:
             if len(closest_points) == 0:
@@ -46,42 +59,24 @@ def closest_n_points(seed, data, n):
 
     return closest_points
 
-def calculate_distances(pcl): #or flatness
-    #print(pcl)
+# Function that goes through all points in one of the divided data sets
+# Input:
+#   pcl: the point cloud
+#   n: the number of close ponts that are used for classification
+# Returns a list of points that have enough close points to be recognised as buildings
+
+def select_building_points(pcl, n):
+
     i = 0
     closest_points_list =[]
     while i < len(pcl.points):
         seed = pcl.points[i]
-        c_points = closest_n_points(seed, pcl, 10)
-        #print(c_points, "closest n points")
-        if len(c_points) > 6:
+        c_points = closest_n_points(seed, pcl, n)
+        if len(c_points) > n - 3:
             point = (seed, c_points)
             closest_points_list.append(seed)
         i += 1
     return closest_points_list
-
-
-def classify_buildings(data):
-    if len(data) < 1000:
-        geom = o3d.geometry.PointCloud()
-        geom.points = o3d.utility.Vector3dVector(data)
-
-        list_of_points = calculate_distances(geom)
-        #print(list_of_points)
-
-
-
-        return list_of_points
-
-    else:
-        # print(data[199])
-        c = int(len(data) / 2)
-        # print(c)
-        data1 = data[:c]
-        data2 = data[c:]
-        d1 = classify_buildings(data1)
-        d2 = classify_buildings(data2)
-        return d1 + d2
 
 
 
