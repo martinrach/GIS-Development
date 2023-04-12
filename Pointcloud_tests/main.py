@@ -12,7 +12,7 @@ import Visualize_data
 #B = nx.read_gml("helsinki_20220818_1_1.gml")
 
 
-with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS-development/testiaineisto/leppävaara.laz") as temp:
+with laspy.open("C:/Users/jani/Documents/Opiskelu/GIS/GIS_development/Pointcloud_tests/leppävaara.laz") as temp:
     print(temp)
     input_las = temp.read()
     print(input_las)
@@ -59,8 +59,22 @@ buildings.points = buildings.points[buildings.classification == 5]
 
 
 buildings_data = np.stack([buildings.X, buildings.Y, buildings.Z], axis=0).transpose((1, 0))
+Visualize_data.visualize_data(buildings_data)
+
 classified_buildings = Classify_buildings.Classify(buildings_data, 10)
 
-#Visualize_data.visualize_data(data)
-#buildings = Classify_buildings.classify_buildings(data, not_ground)
 Visualize_data.visualize_data(classified_buildings)
+
+header = laspy.LasHeader(point_format=3, version="1.2")
+header.offsets = np.min(classified_buildings, axis=0)
+header.scales = np.array([0.1, 0.1, 0.1])
+
+# 3. Create a LasWriter and a point record, then write it
+with laspy.open("classified_buildings_points.las", mode="w", header=header) as writer:
+    point_record2 = laspy.ScaleAwarePointRecord.zeros(buildings_data.shape[0], header=header)
+    point_record2.x = classified_buildings[:, 0]
+    point_record2.y = classified_buildings[:, 1]
+    point_record2.z = classified_buildings[:, 2]
+
+    writer.write_points(point_record2)
+    print("success !")

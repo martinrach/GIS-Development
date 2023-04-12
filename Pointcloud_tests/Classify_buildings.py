@@ -7,7 +7,7 @@ import Visualize_data
 # Dividing data to smaller sets to make calculatios faster
 
 def Classify(data, n):
-    if len(data) < 800:
+    if len(data) < 400:
         geom = o3d.geometry.PointCloud()
         geom.points = o3d.utility.Vector3dVector(data)
         list_of_points = select_building_points(geom, n)
@@ -64,6 +64,19 @@ def closest_n_points(seed, data, n):
 #   pcl: the point cloud
 #   n: the number of close ponts that are used for classification
 # Returns a list of points that have enough close points to be recognised as buildings
+def check_coplanarity(p1, points):
+
+    p2 = points[0][0]
+    p3 = points[1][0]
+    p4 = points[2][0]
+    #print(p1, p2, p3, p4)
+    c = (np.dot((np.cross((p2 - p1), (p4-p1))), (p3 - p1)))
+    #print(c)
+    if abs(c) < 100000:
+        #print(c)
+        return True
+    else:
+        return False
 
 def select_building_points(pcl, n):
 
@@ -73,9 +86,11 @@ def select_building_points(pcl, n):
         seed = pcl.points[i]
         c_points = closest_n_points(seed, pcl, n)
         if len(c_points) > n - 3:
-            point = (seed, c_points)
-            closest_points_list.append(seed)
+            #point = (seed, c_points)
+            if check_coplanarity(seed, c_points):
+                closest_points_list.append(seed)
         i += 1
+    #print("--")
     return closest_points_list
 
 
