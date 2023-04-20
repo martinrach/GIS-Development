@@ -64,6 +64,7 @@ def closest_n_points(seed, data, n):
 #   pcl: the point cloud
 #   n: the number of close ponts that are used for classification
 # Returns a list of points that have enough close points to be recognised as buildings
+
 def check_coplanarity(p1, points):
 
     p2 = points[0][0]
@@ -82,7 +83,7 @@ def select_building_points(pcl, n):
 
     i = 0
     closest_points_list =[]
-    while i < len(pcl.points):
+    while i < (len(pcl.points)):
         seed = pcl.points[i]
         c_points = closest_n_points(seed, pcl, n)
         if len(c_points) > n - 3:
@@ -93,56 +94,6 @@ def select_building_points(pcl, n):
     #print("--")
     return closest_points_list
 
-
-
-    #point cloud size is 3km x 3km
-    #print(las)
-    #print("max X",max(las.X))
-    #print("min X",min(las.X))
-
-    #print("max Y",max(las.Y))
-    #print("min Y",min(las.Y))
-
-    #geom = o3d.geometry.PointCloud()
-    #geom.points = o3d.utility.Vector3dVector(data)
-    # o3d.visualization.draw_geometries([geom])
-
-    #list_of_points = calculate_curvature(geom)
-
-
-
-
-
-
-    #print(geom.normals[0])
-    #print(len(geom.points))
-    #i = 0
-
-
-    #closest_points = geom.compute_nearest_neighbor_distance()
-
-    """
-     while i < len(geom.normals):
-        #print(i)
-        if closest_points[i] < 150:
-            norm = geom.normals[i]
-            if abs(0 - norm[0]) < 0.02 and abs(0 - norm[1]) < 0.02 and abs(0 - norm[2]) > 0.99:
-
-                print(geom.points[i])
-                classified_points.append(geom.points[i])
-        #print(closest_points[i], "cm")
-        #print(geom.normals[i])s
-        i += 1
-    
-     i = 0
-        while i < len(geom.points):
-            if closest_points[i] < 120:
-                norm = geom.normals[i]
-                if abs(0 - norm[0]) < 0.05 and abs(0 - norm[1]) < 0.05 and abs(0 - norm[2]) > 0.95:
-                    # print(geom.points[i])
-                    classified_points.append(geom.points[i])
-            i += 1
-    """
 
 
 
