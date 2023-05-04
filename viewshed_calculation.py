@@ -25,7 +25,7 @@ print(band)
 dataset = gdal.ViewshedGenerate(band, 
                                 driverName='GeoTIFF', 
                                 targetRasterName='viewshed_with_script.tif', 
-                                creationOptions='GTiff', 
+                                creationOptions='COMPRESS=NONE', 
                                 observerX='266000', 
                                 observerY='6738000', 
                                 observerHeight='2', 
