@@ -4,7 +4,7 @@ import open3d as o3d
 import Visualize_data
 
 
-# Dividing data to smaller sets to make calculatios faster
+# Dividing data to smaller sets to make calculations faster
 
 def Classify(data, n):
     if len(data) < 400:
@@ -23,7 +23,7 @@ def Classify(data, n):
         d2 = Classify(data2, n)
         return d1 + d2
 
-# Calculates n closest points of the seed point form the data
+# Calculates n closest points of the seed point from the data
 
 def closest_n_points(seed, data, n):
     closest_points = []

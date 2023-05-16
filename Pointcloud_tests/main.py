@@ -5,11 +5,6 @@ import Visualize_data
 #from skimage import io
 
 #img = io.imread('L4131H.tif')
-# show the image
-#print(img)
-# save the image
-
-#B = nx.read_gml("helsinki_20220818_1_1.gml")
 """
 with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests/classified_buildings_points.las") as temp2:
     print(temp2)
@@ -49,9 +44,9 @@ print(list(point_format.dimension_names))
 #print(set(list(input_las.classification)))
 
 point_data = np.stack([input_las.X, input_las.Y, input_las.Z], axis=0).transpose((1, 0))
-#print(point_data)
+print(point_data)
 
-#Visualize_data.visualize_data(point_data)
+Visualize_data.visualize_data(point_data)
 not_ground = laspy.create(point_format=input_las.header.point_format, file_version=input_las.header.version)
 not_ground.points = input_las.points[input_las.classification != 2]
 not_ground.points = input_las.points[input_las.number_of_returns == 2]
