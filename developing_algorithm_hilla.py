@@ -26,11 +26,11 @@ input_file = file_name
 
 # output
 output_file = 'viewshed_result1.tif'
-output_file = folder+output_file
+output_file = output_file
 
 # output
 output_viewshed = 'viewshed.tif'
-output_viewshed = folder+output_file
+output_viewshed = output_file
 
 # remove output file if it already exists
 if os.path.exists(output_file):
