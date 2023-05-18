@@ -31,14 +31,13 @@ def rasterize_pixel(pcd, X, Y):
 
     return h
 
-def rasterize(pcd, X, Y):
+def rasterize(pcd, X):
 
-    buildings = np.zeros(shape=(1500, 1)).astype(np.float64)
+    buildings = np.zeros(shape=(1500)).astype(np.float64)
 
     end_X = X + 2000
 
-    end_Y = Y + 2000
-    #print(pcd)
+    #print(Y)
     i = 0
     #print(X, Y)
     while i < 1500:
@@ -46,7 +45,7 @@ def rasterize(pcd, X, Y):
         for point in pcd:
             #print(point[0], point[1], point[2])
             if X < point[0] < end_X:
-                #print(point[2])
+
                 points_in_pixel.append(point[2])
                 if len(points_in_pixel) > 1:
                     sum = 0
@@ -56,17 +55,14 @@ def rasterize(pcd, X, Y):
                         count += 1
                     h = (sum / count) / 1000
                     buildings[i] = h
-                    #print(buildings[i], "height many")
                 elif len(points_in_pixel) == 1:
                     h = points_in_pixel[0] / 1000
                     buildings[i] = h
-                    #print(buildings[i], "height 1")
+
         i = i + 1
         X = X + 2000
         end_X = end_X + 2000
-    #print(buildings)
     #print(len(buildings))
-    print(max(buildings))
     return buildings
 
 def slicePointcloud(n, pcd):
@@ -93,12 +89,12 @@ def slicePointcloud(n, pcd):
                 points_in_area.append(point)
             #pixel = rasterize(points_in_area, 0, Y)
             #row.append(pixel)
-        raster = rasterize(points_in_area, 0, Y)
-        #print(raster)
+        raster = rasterize(points_in_area, 0)
         rasters.insert(0, raster)
         Y = Y + n
         print(Y / 2000)
 
-    #print(sliced_point_clouds)
-
-    return rasters
+    buildings = np.array([np.array(xi) for xi in rasters])
+    print(buildings)
+    print(buildings.shape)
+    return buildings

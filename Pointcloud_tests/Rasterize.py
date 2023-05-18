@@ -5,7 +5,7 @@ import laspy
 from rasterio.transform import from_origin
 import Visualize_data
 from matplotlib import pyplot
-import random
+from skimage import morphology
 from rasterio.windows import Window
 import pyproj
 import SlicePointcloud
@@ -165,14 +165,34 @@ with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests
     header = input_las.header
     header.add_crs(crs=pyproj.CRS(proj='utm', zone=35, ellps='WGS84') ,keep_compatibility=True)
     #print(input_las.X)
-    sliced_rasters = SlicePointcloud.slicePointcloud(2000, input_las) #list of point clouds sliced on smaller areas
+    buildings = SlicePointcloud.slicePointcloud(2000, input_las)
 
-pyplot.imshow(sliced_rasters, cmap='pink')
+pyplot.imshow(buildings, cmap='pink')
 pyplot.show()
-height_raster = input_tif_h + sliced_rasters
+
+
+
+# performing opening and closing to the raster to fill the gaps and remove outliers
+opened_raster = morphology.area_opening(buildings, area_threshold=5, connectivity=2)
+result_raster = morphology.area_closing(opened_raster, area_threshold=8, connectivity=2)
+
+pyplot.imshow(result_raster, cmap='pink')
+pyplot.show()
+
+height_raster = input_tif_h + result_raster
 
 pyplot.imshow(height_raster, cmap='pink')
 pyplot.show()
+
+
+transform = from_origin(src.transform[2], src.transform[5], 2, 2)
+new_dataset = rasterio.open('height_raster_test.tif', 'w', driver='GTiff',
+                            height = height_raster.shape[0], width = height_raster.shape[1],
+                            count=1, dtype=str(height_raster.dtype),
+                            transform=transform)
+
+new_dataset.write(height_raster, 1)
+new_dataset.close()
 
 #point_data = np.stack([input_las.X, input_las.Y, input_las.Z], axis=0).transpose((1, 0))
 
