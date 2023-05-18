@@ -219,7 +219,7 @@ band.WriteArray(viewshed)
 band.FlushCache()
 band.ComputeStatistics(False)
 del out_ds
-
+'''
 # create a vector file with antenna locations  
 b_stations = []
 for location in antenna_list:
@@ -233,7 +233,7 @@ schema = {'geometry': 'Point',
 
 with fiona.open('base_station.gpkg', 'w', driver='GPKG', crs=CRS.from_epsg('3067'), schema=schema) as file:
     file.writerecords(b_stations)
-'''
+
 tries1 = []
 for location in tries:
     station = {'geometry': {
