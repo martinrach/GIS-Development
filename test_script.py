@@ -15,7 +15,7 @@ point = {'geometry': {
 schema = {'geometry': 'Point',
           'properties': dict([('name', 'str')])}
 
-with fiona.open('vector_csc_output_file.gpkg', 'w', driver='GPKG', crs=fiona.crs.from_epsg('3067'), schema=schema) as output:
+with fiona.open('vector_csc_output_file.gpkg', 'w', driver='GPKG', crs=fiona._crs.from_epsg('3067'), schema=schema) as output:
     output.write(point)
     
 print('Testing of this python script is complete.')
