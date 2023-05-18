@@ -21,7 +21,7 @@ gdal.UseExceptions()
 ####### folder structure #######
 # input
 folder = '/Users/Hilla/Documents/Aalto-yliopisto/GIS Development/'
-file_name = 'L3432D.tif'
+file_name = 'height_raster_test.tif'
 input_file = file_name
 
 # output
@@ -84,11 +84,11 @@ possible_antenna = band.ReadAsArray()
 
 
 ####### stuff for iteration #######
-max_number_of_stations = 5
+max_number_of_stations = 10
 antenna_list = []
 coverage = 0
 iteration_count = 0
-coverage_treshold = 88
+coverage_treshold = 80
 indices = []
 passed = True
 tries = []
