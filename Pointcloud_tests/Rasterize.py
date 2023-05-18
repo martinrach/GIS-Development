@@ -159,7 +159,6 @@ while row_d >= 0:
 print(height_raster)
 """
 
-
 with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests/classified_buildings_points.las") as temp:
     print(temp)
     input_las = temp.read()
@@ -173,17 +172,16 @@ with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests
 pyplot.imshow(buildings, cmap='pink')
 pyplot.show()
 
-
-
 # performing opening and closing to the raster to fill the gaps and remove outliers
-opened_raster = morphology.area_opening(buildings, area_threshold=5, connectivity=2)
-result_raster = morphology.area_closing(opened_raster, area_threshold=8, connectivity=2)
+opened_raster = morphology.area_opening(buildings, area_threshold=9, connectivity=2)
+result_raster = morphology.dilation(opened_raster)
 
 pyplot.imshow(result_raster, cmap='pink')
 pyplot.show()
 
-i = 0
 
+# Combining elevation model and building height model by selecting the highest value of each pixel between them
+i = 0
 while i < 1500:
     row_dem = input_tif_h[i]
     row_buildings = result_raster[i]
@@ -192,7 +190,7 @@ while i < 1500:
         h_dem = row_dem[j]
         h_buildings = row_buildings[j]
         if h_dem > h_buildings:
-            print(h_dem)
+            #print(h_dem)
             row_buildings[j] = h_dem
         j = j + 1
     i = i + 1
@@ -201,7 +199,7 @@ pyplot.imshow(result_raster, cmap='pink')
 pyplot.show()
 
 transform = from_origin(src.transform[2], src.transform[5], 2, 2)
-new_dataset = rasterio.open('height_raster_test2.tif', 'w', driver='GTiff',
+new_dataset = rasterio.open('height_raster_test3.tif', 'w', driver='GTiff',
                             height = result_raster.shape[0], width = height_raster.shape[1],
                             count=1, dtype=str(result_raster.dtype),
                             transform=transform)
