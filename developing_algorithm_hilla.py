@@ -22,7 +22,7 @@ gdal.UseExceptions()
 # input
 folder = '/Users/Hilla/Documents/Aalto-yliopisto/GIS Development/'
 file_name = 'L3432D.tif'
-input_file = folder+file_name
+input_file = file_name
 
 # output
 output_file = 'viewshed_result1.tif'
