@@ -13,7 +13,7 @@ import numpy.ma as ma
 from matplotlib import pyplot as plt
 from osgeo import gdal, ogr
 import fiona
-from fiona.crs import CRS
+#from fiona.crs import CRS
 gdal.UseExceptions()
 
 
