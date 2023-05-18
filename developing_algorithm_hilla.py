@@ -13,7 +13,7 @@ import numpy.ma as ma
 from matplotlib import pyplot as plt
 from osgeo import gdal, ogr
 import fiona
-#from fiona.crs import CRS
+from fiona.crs import CRS
 gdal.UseExceptions()
 
 
@@ -29,8 +29,8 @@ output_file = 'viewshed_result1.tif'
 output_file = output_file
 
 # output
-output_viewshed = 'viewshed.tif'
-output_viewshed = output_file
+output_viewshed_name = 'viewshed_lepp.tif'
+output_viewshed = output_viewshed_name
 
 # remove output file if it already exists
 if os.path.exists(output_file):
@@ -84,11 +84,11 @@ possible_antenna = band.ReadAsArray()
 
 
 ####### stuff for iteration #######
-max_number_of_stations = 10
+max_number_of_stations = 20
 antenna_list = []
 coverage = 0
 iteration_count = 0
-coverage_treshold = 80
+coverage_treshold = 85
 indices = []
 passed = True
 tries = []
@@ -211,7 +211,7 @@ if os.path.exists(output_viewshed):
 
 # create a raster file for the final viewshed
 driver = gdal.GetDriverByName("GTiff")
-out_ds = driver.Create('viewshed.tif', viewshed.shape[1], viewshed.shape[0], 1, gdal.GDT_Float32)
+out_ds = driver.Create(output_viewshed_name, viewshed.shape[1], viewshed.shape[0], 1, gdal.GDT_Float32)
 out_ds.SetProjection(dtm.GetProjection())
 out_ds.SetGeoTransform(dtm.GetGeoTransform())
 band = out_ds.GetRasterBand(1)
@@ -231,8 +231,12 @@ for location in antenna_list:
 schema = {'geometry': 'Point',
           'properties': dict([('name', 'str')])}
 
-with fiona.open('base_station.gpkg', 'w', driver='GPKG', crs=CRS.from_epsg('3067'), schema=schema) as file:
+with fiona.open('base_stations_lepp.gpkg', 'w', driver='GPKG', crs=CRS.from_epsg('3067'), schema=schema) as file:
     file.writerecords(b_stations)
+    
+    
+    
+    
 
 tries1 = []
 for location in tries:
@@ -246,8 +250,8 @@ schema = {'geometry': 'Point',
 
 with fiona.open('base_station_tries.gpkg', 'w', driver='GPKG', crs=CRS.from_epsg('3067'), schema=schema) as file:
     file.writerecords(tries1)
-'''
 
+'''
 
 
 
