@@ -144,18 +144,21 @@ with rasterio.open('output2.tif') as src:
     #print(src.transform)
     #print(src.transform[2])
     #print(src.transform[5])
-heigth_raster = np.zeros(shape=(1500, 1500)).astype(np.float64)
+height_raster = np.zeros(shape=(1500, 1500)).astype(np.float64)
 zero_raster = np.zeros(shape=(1500, 1500)).astype(np.float64)
 
+"""
 row_b = 0
 row_d = 1499
 while row_d >= 0:
     row_bldg = zero_raster[row_b]
     row_dem = input_tif_h[row_d]
-    heigth_raster[row_d] = row_dem + row_bldg
+    height_raster[row_d] = row_dem + row_bldg
     row_d = row_d - 1
     row_b = row_b + 1
-print(heigth_raster)
+print(height_raster)
+"""
+
 
 with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests/classified_buildings_points.las") as temp:
     print(temp)
@@ -179,19 +182,31 @@ result_raster = morphology.area_closing(opened_raster, area_threshold=8, connect
 pyplot.imshow(result_raster, cmap='pink')
 pyplot.show()
 
-height_raster = input_tif_h + result_raster
+i = 0
 
-pyplot.imshow(height_raster, cmap='pink')
+while i < 1500:
+    row_dem = input_tif_h[i]
+    row_buildings = result_raster[i]
+    j = 0
+    while j < 1500:
+        h_dem = row_dem[j]
+        h_buildings = row_buildings[j]
+        if h_dem > h_buildings:
+            print(h_dem)
+            row_buildings[j] = h_dem
+        j = j + 1
+    i = i + 1
+
+pyplot.imshow(result_raster, cmap='pink')
 pyplot.show()
 
-
 transform = from_origin(src.transform[2], src.transform[5], 2, 2)
-new_dataset = rasterio.open('height_raster_test.tif', 'w', driver='GTiff',
-                            height = height_raster.shape[0], width = height_raster.shape[1],
-                            count=1, dtype=str(height_raster.dtype),
+new_dataset = rasterio.open('height_raster_test2.tif', 'w', driver='GTiff',
+                            height = result_raster.shape[0], width = height_raster.shape[1],
+                            count=1, dtype=str(result_raster.dtype),
                             transform=transform)
 
-new_dataset.write(height_raster, 1)
+new_dataset.write(result_raster, 1)
 new_dataset.close()
 
 #point_data = np.stack([input_las.X, input_las.Y, input_las.Z], axis=0).transpose((1, 0))
