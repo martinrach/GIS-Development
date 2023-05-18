@@ -1,9 +1,9 @@
 
 import fiona
-from fiona.crs import CRS
+#from fiona.crs import CRS
 
 
-crs = CRS.from_epsg('3067')
+crs = fiona.crs.CRS.from_epsg('3067')
 
 point = {'geometry': {
     'type': 'Point',
