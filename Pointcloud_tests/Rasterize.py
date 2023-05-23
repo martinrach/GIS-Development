@@ -10,7 +10,6 @@ from rasterio.windows import Window
 import pyproj
 import SlicePointcloud
 
-
 # Rivi = int(index / 30))
 #print(int(1 / 30))
 
@@ -23,7 +22,7 @@ with rasterio.open('L4131H.tif') as src:
     array = src.read(1)
     print(src.transform[2])
     print(src.transform[5])
-    pyplot.imshow(array, cmap='pink')
+    #pyplot.imshow(array, cmap='pink')
     pyplot.show()
     # The size in pixels of your desired window
     xsize, ysize = 1500, 1500
@@ -142,11 +141,12 @@ with rasterio.open('output2.tif') as src:
     input_tif_h = src.read(1)
     print(input_tif_h[1499])
     #print(src.transform)
-    #print(src.transform[2])
-    #print(src.transform[5])
+    print(src.transform[2])
+    print(src.transform[5])
 height_raster = np.zeros(shape=(1500, 1500)).astype(np.float64)
 zero_raster = np.zeros(shape=(1500, 1500)).astype(np.float64)
-
+pyplot.imshow(input_tif_h, cmap='pink')
+pyplot.show()
 """
 row_b = 0
 row_d = 1499
@@ -176,30 +176,37 @@ pyplot.show()
 opened_raster = morphology.area_opening(buildings, area_threshold=9, connectivity=2)
 result_raster = morphology.dilation(opened_raster)
 
+#with rasterio.open('test_sea_raster.tiff') as src:
+
 pyplot.imshow(result_raster, cmap='pink')
 pyplot.show()
 
+with rasterio.open('test_sea_raster.tif') as src:
+    sea_raster = src.read(1)
 
 # Combining elevation model and building height model by selecting the highest value of each pixel between them
 i = 0
 while i < 1500:
     row_dem = input_tif_h[i]
     row_buildings = result_raster[i]
+    row_sea = sea_raster[i]
     j = 0
     while j < 1500:
         h_dem = row_dem[j]
         h_buildings = row_buildings[j]
+        h_sea = row_sea[j]
         if h_dem > h_buildings:
             #print(h_dem)
             row_buildings[j] = h_dem
+        if h_sea == 4100033:
+            row_buildings[j] = -1
         j = j + 1
     i = i + 1
 
-pyplot.imshow(result_raster, cmap='pink')
+pyplot.imshow(result_raster, cmap='Reds')
 pyplot.show()
-
 transform = from_origin(src.transform[2], src.transform[5], 2, 2)
-new_dataset = rasterio.open('height_raster_test3.tif', 'w', driver='GTiff',
+new_dataset = rasterio.open('height_raster_test4.tif', 'w', driver='GTiff',
                             height = result_raster.shape[0], width = height_raster.shape[1],
                             count=1, dtype=str(result_raster.dtype),
                             transform=transform)

@@ -15,6 +15,7 @@ point_data = np.stack([input_las2.X, input_las2.Y, input_las2.Z], axis=0).transp
 Visualize_data.visualize_data(point_data)
 """
 
+
 with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests/leppävaara.laz") as temp:
     print(temp)
     input_las = temp.read()
