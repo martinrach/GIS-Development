@@ -9,24 +9,28 @@ gdal.UseExceptions()
 
 
 
-def base_station_placement(output_path, dtm, no_stations=None, antenna_height=100, max_iterations=10, coverage_treshold = 95, antenna_buffer = 500):
+def base_station_placement(output_path, input_path, no_stations=None, antenna_height=100, max_stationss=10, coverage_treshold = 95, station_buffer = 500):
     
     
     ###############################################################
     ####### preparation for actual method #######
     ###############################################################
+    # read input
+    height_model = gdal.Open(input_path, gdal.GA_ReadOnly)
+    
+    
     # remove output file if it already exists
     if os.path.exists(output_path):
         os.remove(output_path)
         
     
-    ####### size of dtm #######
-    xmin, xpixel, _, ymax, _, ypixel = dtm.GetGeoTransform()
+    ####### size of height_model #######
+    xmin, xpixel, _, ymax, _, ypixel = height_model.GetGeoTransform()
     
     
     ####### define some of the outputs #######
-    viewshed = np.zeros((dtm.RasterXSize, dtm.RasterYSize), dtype=np.int8)
-    antenna_list = []
+    viewshed = np.zeros((height_model.RasterXSize, height_model.RasterYSize), dtype=np.int8)
+    stations_list = []
     coverage_list = []
     indices = []
     coverage = 0
@@ -34,7 +38,7 @@ def base_station_placement(output_path, dtm, no_stations=None, antenna_height=10
     
     
     ####### create band #######
-    band = dtm.GetRasterBand(1)
+    band = height_model.GetRasterBand(1)
     print("Band successfully imported!")
 
 
@@ -44,10 +48,10 @@ def base_station_placement(output_path, dtm, no_stations=None, antenna_height=10
     
     # areas where no stations can be
     if no_stations == None:
-        no_stations = np.zeros((dtm.RasterXSize, dtm.RasterYSize), dtype=np.int8)
+        no_stations = np.zeros((height_model.RasterXSize, height_model.RasterYSize), dtype=np.int8)
     else:
         if no_stations.shape != possible_antenna.shape:
-            print("File for no stations not compatible with the dtm (dimensions)")
+            print("File for no stations not compatible with the height_model (dimensions)")
             return None
     
     
@@ -59,7 +63,7 @@ def base_station_placement(output_path, dtm, no_stations=None, antenna_height=10
     ###############################################################
     ####### actual method #######
     ###############################################################
-    while coverage < coverage_treshold and len(antenna_list) < max_iterations:
+    while coverage < coverage_treshold and len(stations_list) < max_stationss:
         # function for this loop
         def create_circular_mask(h, w, center=None, radius=None):
     
@@ -149,7 +153,7 @@ def base_station_placement(output_path, dtm, no_stations=None, antenna_height=10
                 viewshed[stationY, stationX] = 1
             
                 # no stations around the old station
-                new_no_stations = 1*create_circular_mask(possible_antenna.shape[0], possible_antenna.shape[1], center=(stationY, stationX), radius=antenna_buffer).T 
+                new_no_stations = 1*create_circular_mask(possible_antenna.shape[0], possible_antenna.shape[1], center=(stationY, stationX), radius=station_buffer).T 
                 new_no_stations = np.where(new_no_stations == 1, 1, no_stations)   #new_no_station = ...
                             
     
@@ -168,7 +172,7 @@ def base_station_placement(output_path, dtm, no_stations=None, antenna_height=10
                 coverage = np.count_nonzero(viewshed) / viewshed.size * 100
                 
                 # append data to the lists
-                antenna_list.append([obsX, obsY])
+                stations_list.append([obsX, obsY])
                 indices.append([stationY, stationX])
                 coverage_list.append(coverage)
         
@@ -194,7 +198,7 @@ def base_station_placement(output_path, dtm, no_stations=None, antenna_height=10
             break
 
 
-    return antenna_list, coverage_list, indices, coverage, iteration_count, viewshed
+    return stations_list, coverage_list, indices, coverage, iteration_count, viewshed
 
 
 

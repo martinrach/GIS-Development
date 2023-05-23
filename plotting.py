@@ -6,12 +6,15 @@ from matplotlib.colors import ListedColormap
 
 
 
-def plotting(dtm, viewshed, antennas):
+def plotting(input_path, viewshed, antennas):
     print("\nStart plotting...")
     
+    # read input
+    height_model = gdal.Open(input_path, gdal.GA_ReadOnly)
+    
     # check for correct input formats
-    if type(dtm) != gdal.Dataset:
-        print("Format of the DTM must be a gdal.Dataset!")
+    if type(height_model) != gdal.Dataset:
+        print("Format of the height_model must be a gdal.Dataset!")
         return None
     elif type(viewshed) != np.ndarray:
         print("Format of the viewshed must be an np.ndarray!")
@@ -21,8 +24,8 @@ def plotting(dtm, viewshed, antennas):
         return None    
     
 
-    # get dimensions of dtm
-    xmin, xpixel, _, ymax, _, ypixel = dtm.GetGeoTransform()
+    # get dimensions of height_model
+    xmin, xpixel, _, ymax, _, ypixel = height_model.GetGeoTransform()
     
     # split list of antennas
     x=[]
