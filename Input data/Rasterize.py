@@ -17,7 +17,7 @@ arr = np.zeros(shape=(1500,1500)).astype(np.float64)
 #print(arr.data)
 
 
-with rasterio.open('L4131H.tif') as src:
+with rasterio.open('Elevation model/L4131H.tif') as src:
 
     array = src.read(1)
     print(src.transform[2])
@@ -196,7 +196,6 @@ while i < 1500:
         h_buildings = row_buildings[j]
         h_sea = row_sea[j]
         if h_dem > h_buildings:
-            #print(h_dem)
             row_buildings[j] = h_dem
         if h_sea == 4100033:
             row_buildings[j] = -1
@@ -213,155 +212,3 @@ new_dataset = rasterio.open('height_raster_test4.tif', 'w', driver='GTiff',
 
 new_dataset.write(result_raster, 1)
 new_dataset.close()
-
-#point_data = np.stack([input_las.X, input_las.Y, input_las.Z], axis=0).transpose((1, 0))
-
-
-"""
-    
-def rasterize(pcd, size, n):
-    # n defines th index in pcd list and thus defines the X, Y, end_X and end_Y
-
-    px = int(size / 200)
-
-    X = (n % 30) * size
-    end_X = X + 200
-    Y = int(n / 30) * size
-    end_Y = Y + 200
-
-    buildings = np.zeros(shape=(px, px)).astype(np.float64)
-
-    y = 49
-    x = 0
-    print(X, Y)
-    while y >= 0:
-        while x < 50:
-            points_in_pixel = []
-            for point in pcd:
-                # (point[0], point[1], point[2])
-
-                if X < point[0] < end_X and Y < point[1] < end_Y:
-                    print(point[2])
-                    points_in_pixel.append(point[2])
-                    if len(points_in_pixel) > 1:
-                        sum = 0
-                        count = 0
-                        for p in points_in_pixel:
-                            sum += p
-                            count += 1
-                        h = sum / count
-                        buildings[x][y] = h
-                        print(buildings[x][y], "height many")
-                    elif len(points_in_pixel) == 1:
-                        h = points_in_pixel[0]
-                        buildings[x][y] = h
-                        print(buildings[x][y], "height 1")
-            x = x + 1
-            X = X + 200
-            end_X = end_X + 200
-
-        y = y - 1
-        Y = Y + 200
-        end_Y = end_Y + 200
-
-    return buildings
-    buildings = np.zeros(shape=(1500, 1500)).astype(np.float64)
-    #print(arr)
-    X_r = 0 #starting pixel in raster i  X direction
-    Y_r = 0 #starting pixel in raster in Y direction
-    pcd_side_x = 50 # size of the side of the point cloud in pixels
-    pcd_side_y = 50 # size of the side of the point cloud in pixels
-    count = 0 #Counter to keep in track the list index
-    pcd = sliced_pcds[count]
-    X = 0
-    end_X = X + 200
-    Y = 0
-    end_Y = Y + 200
-
-    while count < 900: # number of list indexes is 900
-        Y_r = 0
-        while Y_r < pcd_side_y:
-
-            column = buildings[Y_r]
-            #print(pcd)
-
-            if 900 % (count + 1) == 0:
-                X_r = 0
-                pcd_side_x = 50
-
-            while X_r < pcd_side_x:
-                #go through the first list in sliced_pcd
-                points_in_pixel = []
-                height = column[X_r]
-                for point in pcd:
-
-                    # if point is in 2 x 2 area it is considered as a height of that pixel
-                    # (point[0], point[1], point[2])
-                    if X < point[0] < end_X and Y > point[1] > end_Y:
-                        print(point[2])
-                        points_in_pixel.append(point[2])
-                        if len(points_in_pixel) > 1:
-                            sum = 0
-                            count_2 = 0
-                            for p in points_in_pixel:
-                                sum += p
-                                count_2 += 1
-                            h = sum / count_2
-
-                        elif len(points_in_pixel) == 1:
-                            h = points_in_pixel[0]
-                            height = h
-
-
-                X = X + 200 #increasing the point cloud index
-                end_X = end_X + 200
-
-                X_r = X_r + 1
-
-            X_r = 0
-            X = X + 200  # Increasing the point cloud index
-            end_X = end_X + 200
-            Y_r = Y_r + 1
-            
-        X_r = X_r + 50
-        pcd_side_x = pcd_side_x + 50
-        count = count + 1
-        pcd = sliced_pcds[count]
-
-    print(buildings)
-
-
-
-    
-    for row in buildings:
-        for height in row:
-            points_in_pixel = []
-            for point in point_data:
-                #(point[0], point[1], point[2])
-                if X < point[0] < end_X and Y < point[1] < end_Y:
-                    print(point[2])
-                    points_in_pixel.append(point[2])
-                    if len(points_in_pixel) > 1:
-                        sum = 0
-                        count = 0
-                        for p in points_in_pixel:
-                            sum += p
-                            count += 1
-                        h = sum / count
-                        height = h
-                    elif len(points_in_pixel) == 1:
-                        h = points_in_pixel[0]
-                        height = h
-            X = X + 200
-            end_X = end_X + 200
-            Y = Y + 200
-            end_Y = end_Y + 200
-            
-    print(buildings)
-"""
-
-
-
-#Visualize_data.visualize_data(point_data)
-
-

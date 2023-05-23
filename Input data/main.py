@@ -2,21 +2,8 @@ import numpy as np
 import laspy
 import Classify_buildings
 import Visualize_data
-#from skimage import io
 
-#img = io.imread('L4131H.tif')
-"""
-with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests/classified_buildings_points.las") as temp2:
-    print(temp2)
-    input_las2 = temp2.read()
-    print(input_las2)
-
-point_data = np.stack([input_las2.X, input_las2.Y, input_las2.Z], axis=0).transpose((1, 0))
-Visualize_data.visualize_data(point_data)
-"""
-
-
-with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS/Pointcloud_tests/leppävaara.laz") as temp:
+with laspy.open("C:/Users/Janne Niskanen/Documents/opiskelu/GIS-project/Input data/Pointcloud/leppävaara.laz") as temp:
     print(temp)
     input_las = temp.read()
     print(input_las)
@@ -32,17 +19,6 @@ point_format = input_las.point_format
 print(point_format.id)
 
 print(list(point_format.dimension_names))
-#print(input_las.header)
-#print(input_las.header.point_format)
-#print(input_las.header.point_count)
-#print(input_las.vlrs)
-#print(list(input_las.point_format.dimension_names))
-
-#print(len(input_las.X), "X")
-#print(len(input_las.intensity), "intensity")
-#print(input_las.gps_time, "gpstime")
-
-#print(set(list(input_las.classification)))
 
 point_data = np.stack([input_las.X, input_las.Y, input_las.Z], axis=0).transpose((1, 0))
 print(point_data)
@@ -62,8 +38,6 @@ buildings.points = buildings.points[buildings.classification == 5]
 buildings_data = np.stack([buildings.X, buildings.Y, buildings.Z], axis=0).transpose((1, 0))
 
 #Visualize whole data
-
-#Visualize_data.visualize_data(buildings_data)
 
 #Classify buldings points with 10 closest points
 classified_points = Classify_buildings.Classify(buildings_data, 10)
