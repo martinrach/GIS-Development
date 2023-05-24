@@ -241,33 +241,23 @@ while coverage < coverage_treshold and len(stations_list) < max_number_of_statio
 
 
 
-def plotting(input_path, viewshed, antennas):
+def plotting(viewshed, antennas):
     print("\nStart plotting...")
     
-    # read input
-    height_model = gdal.Open(input_path, gdal.GA_ReadOnly)
-    
-    # check for correct input formats
-    if type(height_model) != gdal.Dataset:
-        print("Format of the height_model must be a gdal.Dataset!")
-        return None
-    elif type(viewshed) != np.ndarray:
+    if type(viewshed) != np.ndarray:
         print("Format of the viewshed must be an np.ndarray!")
         return None
     elif type(antennas) != list:
         print("Format of the antennas must be a list!")
         return None    
     
-
-    # get dimensions of height_model
-    xmin, xpixel, _, ymax, _, ypixel = height_model.GetGeoTransform()
     
     # split list of antennas
     x=[]
     y=[]
     for antenna in antennas:
-        x.append(antenna[0]-int(xmin))
-        y.append(abs(antenna[1]-int(ymax)))
+        x.append(antenna[1])
+        y.append(antenna[0])
 
     # Plotting
     plt.figure(figsize=(4,3))
@@ -286,25 +276,28 @@ def plotting(input_path, viewshed, antennas):
 
 
 
-
-def goodness(viewshed, antennas):
+def goodness(viewshed, antennas_number):
     # check for correct input formats
     if type(viewshed) != np.ndarray:
         print("Format of the viewshed must be an np.ndarray!")
         return None
-    elif type(antennas) != list:
-        print("Format of the antennas must be a list!")
+    elif type(antennas_number) != int:
+        print("Format of the antennas must be a int!")
         return None    
     
     # calculate coverage of the viewshed in [%]
     coverage = np.count_nonzero(viewshed) / viewshed.size * 100
     
     # avergae coverage per antenna
-    avg_coverage = coverage / len(antennas)
+    avg_coverage = coverage / antennas_number
     
     # print result
     print('{:.0f} % of the area is covered by the base stations.'.format(coverage))
     print('Average coverage per base-station: {:.2f}%'.format(avg_coverage))
+
+
+
+
 
 def base_station_placement(output_path, input_path, no_stations=None, antenna_height=100, max_stationss=10, coverage_treshold = 95, station_buffer = 500):
     
@@ -495,14 +488,16 @@ def base_station_placement(output_path, input_path, no_stations=None, antenna_he
             break
 
 
-    return stations_list, coverage_list, indices, coverage, iteration_count, viewshed
+    return stations_list, coverage_list, indices, iteration_count, viewshed
 
 
 
-stations_list, coverage_list, indices, coverage, iteration_count, viewshed = base_station_placement(output_file, input_file)
+stations_list, coverage_list, indices, iteration_count, viewshed = base_station_placement(output_file, input_file)
 
-plotting(input_file, viewshed, stations_list)
-goodness(viewshed, stations_list)
+print(indices)
+
+plotting(viewshed, indices)
+goodness(viewshed, int(len(stations_list)))
 
 
 
