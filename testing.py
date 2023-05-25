@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat May  6 10:29:16 2023
+Created on Thu May 25 18:36:53 2023
 
-@author: rachb
+@author: Hilla
 """
+
 ####### modules and stuff #######
 import os
 import numpy as np
@@ -14,18 +15,21 @@ from matplotlib.colors import ListedColormap
 gdal.UseExceptions()
 
 
-
+folder = '/Users/rachb/Desktop/GIS/'
 
 ####### folder structure #######
 # input
-folder = '/Users/rachb/Desktop/GIS/'
-file_name = 'L4131H.tif'
+folder = '/Users/Hilla/Documents/Aalto-yliopisto/GIS Development/'
+file_name = 'height_raster_test4.tif'
 input_file = folder+file_name
 
 # output
 output_file = 'viewshed_result.tif'
 output_file = folder+output_file
 
+# output
+output_viewshed_name = 'viewshed_result_final.tif'
+output_viewshed = folder+output_viewshed_name
 
 ####### load band #######
 height_model = gdal.Open(input_file, gdal.GA_ReadOnly)
@@ -299,7 +303,7 @@ def goodness(viewshed, antennas_number):
 
 
 
-def base_station_placement(output_path, input_path, no_stations=None, antenna_height=100, max_stationss=10, coverage_treshold = 95, station_buffer = 500):
+def base_station_placement(output_path, input_path, output_viewshed, no_stations=None, antenna_height=100, max_stationss=10, coverage_treshold = 95, station_buffer = 500):
     
     
     ###############################################################
@@ -312,7 +316,7 @@ def base_station_placement(output_path, input_path, no_stations=None, antenna_he
     # remove output file if it already exists
     if os.path.exists(output_path):
         os.remove(output_path)
-        
+   
     
     ####### size of height_model #######
     xmin, xpixel, _, ymax, _, ypixel = height_model.GetGeoTransform()
@@ -487,17 +491,28 @@ def base_station_placement(output_path, input_path, no_stations=None, antenna_he
             print("No more possible station positions!")        
             break
 
+    # remove output file if it already exists
+    if os.path.exists(output_viewshed):
+        os.remove(output_viewshed)
+
+    # create a raster file for the final viewshed
+    driver = gdal.GetDriverByName("GTiff")
+    out_ds = driver.Create(output_viewshed_name, viewshed.shape[1], viewshed.shape[0], 1, gdal.GDT_Float32)
+    out_ds.SetProjection(height_model.GetProjection())
+    out_ds.SetGeoTransform(height_model.GetGeoTransform())
+    band = out_ds.GetRasterBand(1)
+    band.WriteArray(viewshed)
+    band.FlushCache()
+    band.ComputeStatistics(False)
+    del out_ds
 
     return stations_list, coverage_list, indices, iteration_count, viewshed
 
 
 
-stations_list, coverage_list, indices, iteration_count, viewshed = base_station_placement(output_file, input_file)
+stations_list, coverage_list, indices, iteration_count, viewshed = base_station_placement(output_file, input_file, output_viewshed)
 
 print(indices)
 
 plotting(viewshed, indices)
 goodness(viewshed, int(len(stations_list)))
-
-
-
