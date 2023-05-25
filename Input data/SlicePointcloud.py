@@ -1,5 +1,5 @@
 import numpy as np
-
+import Visualize_data
 #rasterizing the point cloud date row by row
 
 def rasterize(pcd, X):
@@ -23,6 +23,7 @@ def rasterize(pcd, X):
                 elif len(points_in_pixel) == 1:
                     h = points_in_pixel[0] / 1000
                     buildings[i] = h
+                #print(h)
         i = i + 1
         X = X + 2000
         end_X = end_X + 2000
@@ -45,6 +46,7 @@ def slicePointcloud(n, pcd):
         X = 0
         points_in_area = []
         for point in point_data:
+
             if X < point[0] < Xmax and Y < point[1] < Y_end:
                 points_in_area.append(point)
         raster = rasterize(points_in_area, 0)
