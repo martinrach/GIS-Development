@@ -154,9 +154,10 @@ profile.update({
     'width': 6000,
     'transform': transform})
 
-new_dataset = rasterio.open('Merged_height_model', 'w', driver='GTiff',
+new_dataset = rasterio.open('Merged_height_model.tif', 'w', driver='GTiff',
                                 height = mosaic1.shape[0], width = mosaic1.shape[1],
                                 count=1, dtype=str(mosaic1.dtype),
+                                crs="EPSG:3067",
                                 transform=transform)
 
 new_dataset.write(mosaic1, 1)
